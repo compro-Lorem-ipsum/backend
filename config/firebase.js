@@ -11,11 +11,6 @@ const serviceAccount = {
   private_key: rawKey,
 };
 
-console.log("PRIVATE KEY PREVIEW:");
-console.log(rawKey.split("\n").slice(0, 3).join("\n"));
-console.log("...");
-console.log(rawKey.split("\n").slice(-3).join("\n"));
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   storageBucket: `${process.env.FIREBASE_PROJECT_ID}.firebasestorage.app`,
