@@ -3,6 +3,7 @@ node_modules/
 
 # File environment 
 .env
+config\serviceAccountKey.json
 
 # Log files
 npm-debug.log*
