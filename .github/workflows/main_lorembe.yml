@@ -12,6 +12,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+      FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+      FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -54,3 +58,4 @@ jobs:
           package: .
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6E14B03A93E84446BCD3658E8792E99A }}
+
