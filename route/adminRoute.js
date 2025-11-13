@@ -1,9 +1,15 @@
 const express = require('express');
-const { registerAdmin, login, verifyToken, updateAdmin, deleteAdmin } = require('../controller/adminController');
+const { registerAdmin, login, verifyToken, updateAdmin, deleteAdmin, getAdmins, getAdminById } = require('../controller/adminController');
 const router = express.Router();
 
 // Login
 router.post('/login', login);
+
+// GET ALL ADMIN (hanya SuperAdmin)
+router.get('/admins', verifyToken, getAdmins);
+
+// GET ADMIN BY ID (hanya SuperAdmin)
+router.get('/admins/:id', verifyToken, getAdminById);
 
 // Register (hanya SuperAdmin)
 router.post('/register', verifyToken, registerAdmin);

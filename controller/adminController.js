@@ -167,10 +167,61 @@ const verifyToken = (req, res, next) => {
     });
 };
 
+// GET ALL ADMIN — hanya SuperAdmin yang bisa melihat semua admin
+const getAdmins = async (req, res) => {
+    try {
+        if (!req.user || req.user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Hanya SuperAdmin yang bisa melihat daftar admin' });
+        }
+
+        const admins = await Admin.getAll(); 
+
+        return res.status(200).json({
+            message: 'Daftar admin berhasil diambil',
+            admins
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+// GET ADMIN BY ID — hanya SuperAdmin yang bisa mengakses
+const getAdminById = async (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+
+        if (!id) {
+            return res.status(400).json({ message: 'ID admin wajib diisi' });
+        }
+
+        // Hanya SuperAdmin yang boleh melihat data admin manapun
+        if (!req.user || req.user.role !== 'SuperAdmin') {
+            return res.status(403).json({ message: 'Hanya SuperAdmin yang bisa melihat data admin' });
+        }
+
+        const admin = await Admin.findById(id);
+
+        if (!admin) {
+            return res.status(404).json({ message: 'Admin tidak ditemukan' });
+        }
+
+        return res.status(200).json({
+            message: 'Data admin berhasil diambil',
+            admin
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: err.message });
+    }
+};
+
 module.exports = {
     registerAdmin,
     login,
     updateAdmin,
     deleteAdmin,
-    verifyToken
+    verifyToken,
+    getAdminById,
+    getAdmins
 };

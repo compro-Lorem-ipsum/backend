@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
+
 const {
   createLaporan,
   getAllLaporan,
@@ -11,7 +14,7 @@ const {
 const { verifyToken } = require('../controller/adminController');
 
 // CREATE
-router.post('/', createLaporan);
+router.post('/', upload.any(), createLaporan);
 
 // READ ALL
 router.get('/', verifyToken, getAllLaporan);
@@ -20,7 +23,7 @@ router.get('/', verifyToken, getAllLaporan);
 router.get('/:id', verifyToken, getLaporanById);
 
 // UPDATE
-router.put('/:id', verifyToken, updateLaporan);
+router.put('/:id', verifyToken, upload.any(), updateLaporan);
 
 // DELETE
 router.delete('/:id',verifyToken,  deleteLaporan);
