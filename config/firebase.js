@@ -3,7 +3,6 @@ const admin = require("firebase-admin");
 // Ambil raw value dari Azure / GitHub Secrets
 let rawKey = process.env.FIREBASE_PRIVATE_KEY;
 
-
 rawKey = rawKey.replace(/\\n/g, '\n');
 
 const serviceAccount = {
