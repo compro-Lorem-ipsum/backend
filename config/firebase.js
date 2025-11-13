@@ -3,6 +3,13 @@ const admin = require("firebase-admin");
 // Ambil raw value dari Azure / GitHub Secrets
 let rawKey = process.env.FIREBASE_PRIVATE_KEY;
 
+if (!rawKey) {
+  console.error("❌ FIREBASE_PRIVATE_KEY UNDEFINED at firebase.js load time");
+  rawKey = "";
+}
+
+rawKey = rawKey.replace(/\\n/g, '\n');
+
 // Jika BASE64 → decode ke PEM
 if (rawKey && !rawKey.includes("BEGIN PRIVATE KEY")) {
   try {
