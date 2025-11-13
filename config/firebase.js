@@ -1,28 +1,27 @@
 const admin = require("firebase-admin");
 
-// Decode BASE64 → kembali menjadi private key PEM multiline
-const decodedPrivateKey = Buffer.from(
-  process.env.FIREBASE_PRIVATE_KEY,
-  "base64"
-).toString("utf8");
+// Ambil raw value dari Azure / GitHub Secrets
+let rawKey = process.env.FIREBASE_PRIVATE_KEY;
 
-// Simpan ke objek dengan nama aman (tidak terdeteksi oleh GitHub)
-const safeServiceAccount = {
+// Jika BASE64 → decode ke PEM
+if (rawKey && !rawKey.includes("BEGIN PRIVATE KEY")) {
+  try {
+    rawKey = Buffer.from(rawKey, "base64").toString("utf8");
+  } catch (e) {
+    console.error("Gagal decode BASE64 private key:", e);
+  }
+}
+
+const serviceAccount = {
   project_id: process.env.FIREBASE_PROJECT_ID,
   client_email: process.env.FIREBASE_CLIENT_EMAIL,
-  pKey: decodedPrivateKey, // aman, bukan "private_key"
+  private_key: rawKey,
 };
 
-// Initialize Firebase Admin dengan mapping ke private_key
 admin.initializeApp({
-  credential: admin.credential.cert({
-    project_id: safeServiceAccount.project_id,
-    client_email: safeServiceAccount.client_email,
-    private_key: safeServiceAccount.pKey, // baru dikirim sebagai private_key di sini
-  }),
+  credential: admin.credential.cert(serviceAccount),
   storageBucket: `${process.env.FIREBASE_PROJECT_ID}.firebasestorage.app`,
 });
 
-// Export bucket
 const bucket = admin.storage().bucket();
 module.exports = bucket;
