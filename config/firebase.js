@@ -1,17 +1,20 @@
 const admin = require("firebase-admin");
 
-// Private key dalam base64
-const base64Key = process.env.FIREBASE_PRIVATE_KEY_BASE64;
+// Ambil raw value dari Azure / GitHub Secrets
+let rawKey = process.env.FIREBASE_PRIVATE_KEY;
 
-// Decode Base64 → Buffer → String
-const decodedKey = Buffer.from(base64Key, "base64").toString("utf-8");
+rawKey = rawKey.replace(/\\n/g, '\n');
 
-// Buat service account object
 const serviceAccount = {
   project_id: process.env.FIREBASE_PROJECT_ID,
   client_email: process.env.FIREBASE_CLIENT_EMAIL,
-  private_key: decodedKey,
+  private_key: rawKey,
 };
+
+console.log("PRIVATE KEY PREVIEW:");
+console.log(rawKey.split("\n").slice(0, 3).join("\n"));
+console.log("...");
+console.log(rawKey.split("\n").slice(-3).join("\n"));
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
