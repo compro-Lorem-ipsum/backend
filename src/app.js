@@ -1,7 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-require('dotenv').config();
+
+if (process.env.WEBSITE_SITE_NAME === undefined) {
+  // only load .env locally
+  require("dotenv").config();
+}
+
 
 // Import route autentikasi
 const adminRoute = require('../route/adminRoute');
