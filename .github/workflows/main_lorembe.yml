@@ -54,12 +54,7 @@ jobs:
           package: .
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6E14B03A93E84446BCD3658E8792E99A }}
-          app-settings-json: |
-            {
-              "FIREBASE_PRIVATE_KEY": "${{ secrets.FIREBASE_PRIVATE_KEY }}",
-              "FIREBASE_CLIENT_EMAIL": "${{ secrets.FIREBASE_CLIENT_EMAIL }}",
-              "FIREBASE_PROJECT_ID": "${{ secrets.FIREBASE_PROJECT_ID }}"
-            }
+
 
 
 
