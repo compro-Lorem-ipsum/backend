@@ -26,11 +26,7 @@ app.use('/api/jadwal', jadwalRoute);
 app.use('/api/pos', posRoute);
 app.use('/api/laporan', laporanRoute);
 app.use('/api/absensi', absensiRoute);
-
-console.log("ENV DEBUG:");
-console.log("FIREBASE_PROJECT_ID:", process.env.FIREBASE_PROJECT_ID);
-console.log("FIREBASE_CLIENT_EMAIL:", process.env.FIREBASE_CLIENT_EMAIL);
-console.log("FIREBASE_PRIVATE_KEY:", process.env.FIREBASE_PRIVATE_KEY ? "EXISTS" : "UNDEFINED");
+app.use("/uploads", express.static("uploads"));
 
 // Jalankan server
 app.listen(port, () => {

@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const multer = require("multer");
-const upload = multer({ storage: multer.memoryStorage() });
+const uploadLaporan = require("../config/upload");
 
 const {
   createLaporan,
@@ -13,8 +12,16 @@ const {
 
 const { verifyToken } = require('../controller/adminController');
 
+// UPLOAD MULTI-FIELD
+const uploadFields = uploadLaporan.fields([
+  { name: "gambar1", maxCount: 1 },
+  { name: "gambar2", maxCount: 1 },
+  { name: "gambar3", maxCount: 1 },
+  { name: "gambar4", maxCount: 1 },
+]);
+
 // CREATE
-router.post('/', upload.any(), createLaporan);
+router.post('/', verifyToken, uploadFields, createLaporan);
 
 // READ ALL
 router.get('/', verifyToken, getAllLaporan);
@@ -23,9 +30,9 @@ router.get('/', verifyToken, getAllLaporan);
 router.get('/:id', verifyToken, getLaporanById);
 
 // UPDATE
-router.put('/:id', verifyToken, upload.any(), updateLaporan);
+router.put('/:id', verifyToken, uploadFields, updateLaporan);
 
 // DELETE
-router.delete('/:id',verifyToken,  deleteLaporan);
+router.delete('/:id', verifyToken, deleteLaporan);
 
 module.exports = router;

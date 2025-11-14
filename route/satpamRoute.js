@@ -1,28 +1,27 @@
 const express = require('express');
-const multer = require("multer");
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = require("../config/upload");   
 
 const {
   createSatpam,
   getAllSatpam,
   getSatpamById,
   updateSatpam,
-  deleteSatpam
+  deleteSatpam,
 } = require('../controller/satpamController');
 
 const { verifyToken } = require('../controller/adminController');
 
 const router = express.Router();
 
-// CREATE
-router.post('/', verifyToken, upload.any(), createSatpam);
+// CREATE — Satpam dengan upload gambar
+router.post('/', verifyToken, upload.single("gambar"), createSatpam);
 
 // READ
 router.get('/', verifyToken, getAllSatpam);
 router.get('/:id', verifyToken, getSatpamById);
 
-// UPDATE
-router.put('/:id', verifyToken, upload.any(), updateSatpam);
+// UPDATE — Upload gambar baru optional
+router.put('/:id', verifyToken, upload.single("gambar"), updateSatpam);
 
 // DELETE
 router.delete('/:id', verifyToken, deleteSatpam);
