@@ -3,7 +3,7 @@ node_modules/
 
 # File environment 
 .env
-config\serviceAccountKey.json
+uploads/
 
 # Log files
 npm-debug.log*

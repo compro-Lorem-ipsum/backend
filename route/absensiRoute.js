@@ -1,11 +1,14 @@
 const express = require('express');
+const upload = require("../config/upload");   
 const router = express.Router();
+
 const {
   createAbsensi,
   getAllAbsensi,
   getAbsensiById,
   updateAbsensi,
-  deleteAbsensi
+  deleteAbsensi,
+  createAbsensiWithFace  
 } = require('../controller/absensiController');
 
 const { verifyToken } = require('../controller/adminController');
@@ -24,5 +27,8 @@ router.put('/:id', verifyToken, updateAbsensi);
 
 // DELETE
 router.delete('/:id', verifyToken, deleteAbsensi);
+
+// ABSENSI WITH FACE
+router.post("/face", upload.single("file"), createAbsensiWithFace);
 
 module.exports = router;

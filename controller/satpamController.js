@@ -1,39 +1,88 @@
 const path = require("path");
 const Satpam = require("../models/satpam");
+const axios = require("axios");
+const FormData = require("form-data");
+const fs = require("fs");
 
-// CREATE — Tambah data satpam
+const FLASK_URL = process.env.FLASK_URL; // contoh: http://localhost:5000
+
+// CREATE — Tambah data satpam + ENROLL wajah ke Flask
 const createSatpam = async (req, res) => {
   try {
-    const { nama, asal_daerah, nip, no_telp, milvus_id } = req.body;
+    const { nama, asal_daerah, nip, no_telp } = req.body;
 
     if (!nama || !nip) {
       return res.status(400).json({ message: "Nama dan NIP wajib diisi" });
     }
 
-    let imagePath = null;
-
-    // Jika ada upload gambar
-    if (req.file) {
-      imagePath = `/uploads/${req.file.filename}`;
-    }
-
-    await Satpam.create({
+    // ========================================
+    // 1️⃣ INSERT DATA AWAL (gambar & milvus kosong)
+    // ========================================
+    const result = await Satpam.create({
       nama,
       asal_daerah,
       nip,
       no_telp,
-      gambar: imagePath,
-      milvus_id,
+      gambar: null,
+      milvus_id: null
     });
 
+    const insertedId = result[0]; // knex return array of IDs
+
+    // ========================================
+    // 2️⃣ UPDATE GAMBAR jika ada file
+    // ========================================
+    let imagePath = null;
+
+    if (req.file) {
+      imagePath = `/uploads/${req.file.filename}`;
+
+      await Satpam.update(insertedId, { gambar: imagePath });
+    }
+
+    // ========================================
+    // 3️⃣ KIRIM GAMBAR KE FLASK UNTUK ENROLL
+    // ========================================
+    let milvus_id = null;
+
+    if (req.file) {
+      // BACA FILE ASLI DARI DISK, BUKAN req.file.buffer
+      const imageBuffer = fs.readFileSync(req.file.path);
+
+      const form = new FormData();
+      form.append("image", imageBuffer, req.file.originalname);
+      form.append("employee_id", insertedId);
+
+      const flaskResp = await axios.post(`${FLASK_URL}/enroll`, form, {
+        headers: form.getHeaders(),
+      });
+
+      // Ambil milvus_id/employee id dari response Flask
+      milvus_id = flaskResp.data.employee_id;
+
+      // Simpan milvus_id ke database
+      await Satpam.update(insertedId, { milvus_id });
+    }
+
+    // ========================================
+    // 4️⃣ RESPONSE KE FRONTEND
+    // ========================================
     res.status(201).json({
-      message: "Data satpam berhasil ditambahkan",
-      image_url: imagePath,
+      message: "Satpam & wajah berhasil ditambahkan",
+      data: {
+        id: insertedId,
+        nama,
+        nip,
+        asal_daerah,
+        no_telp,
+        gambar: imagePath,
+        milvus_id
+      }
     });
 
   } catch (err) {
-    console.error("Error createSatpam:", err);
-    res.status(500).json({ error: err.message });
+    console.error("🔥 ERROR:", err.response?.data || err.message);
+    res.status(500).json({ error: "Gagal menambahkan satpam" });
   }
 };
 
