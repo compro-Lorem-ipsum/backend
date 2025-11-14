@@ -26,6 +26,7 @@ app.use('/api/jadwal', jadwalRoute);
 app.use('/api/pos', posRoute);
 app.use('/api/laporan', laporanRoute);
 app.use('/api/absensi', absensiRoute);
+app.use("/uploads", express.static("uploads"));
 
 // Jalankan server
 app.listen(port, () => {
